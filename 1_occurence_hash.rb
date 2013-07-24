@@ -1,7 +1,9 @@
 hash = {}
-string = gets.delete "\n"
+string = gets
 string.split("").each_with_index do |item, index|
-  count = string.count item
-  hash = hash.merge(Hash[item,count])
+  if item.match(/^[[:alpha:]]$/)
+    count = string.count item
+    hash = hash.merge(Hash[item,count])
+  end
 end
 puts hash
