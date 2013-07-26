@@ -1,13 +1,13 @@
 def fibonacci
-  printf("0 1 ")
-  yield 1000, 0, 1
+  printf("0 ")
+  yield 1000, 0, 1, 1
   puts "\n";
 end
 
-fibonacci do |limit, a, b|
+fibonacci do |limit, a, b, c|
   begin
-    c = a + b
     printf("%d ",c)
+    c = a + b
     a = b
     b = c
   end while c < limit
