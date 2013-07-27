@@ -12,8 +12,8 @@ end
 puts "enter the array with values separated by whitespaces:"
 array = gets.split(" ").map { |s| s.to_i }
 printf ("enter the power: ");
-n = gets.to_i
-array = array.power(n)
+power = gets.to_i
+array = array.power(power)
 puts "the array raised to given power is:"
 array.each do |item|
   printf("%d ",item)
