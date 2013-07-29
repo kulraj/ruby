@@ -1,14 +1,16 @@
 def fibonacci
-  printf("0 ")
-  yield 1000, 0, 1, 1
-  puts "\n";
+  before_previous = 0
+  previous = 1
+  printf("0 1 ")#first two numbers in sequence
+  while
+    current = before_previous + previous
+    yield 1000, current
+    before_previous = previous
+    previous = current
+  end
 end
 
-fibonacci do |limit, a, b, c|
-  begin
-    printf("%d ",c)
-    c = a + b
-    a = b
-    b = c
-  end while c < limit
+fibonacci do |limit, current|
+  exit if current > limit
+  printf("%d ",current)
 end
