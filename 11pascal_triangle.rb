@@ -23,11 +23,11 @@ def pascal_triangle
 end
 
 #calculate factorial by inject
-def fact(n)
-  (1..n).inject(1) {|prod, i| prod * i}
+def factorial(n)
+  (1..n).inject(1) {|product, i| product * i}
 end
 
 # print combination C(n,k)
 pascal_triangle do |n, k|
-  printf("%d ", fact(n) / (fact(k) * fact(n - k)))
+  printf("%d ", factorial(n) / (factorial(k) * factorial(n - k)))
 end
