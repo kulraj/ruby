@@ -1,9 +1,8 @@
-hash = {}
-string = gets
-string.split("").each_with_index do |item, index|
-  if item.match(/^[[:alpha:]]$/)
-    count = string.count item
-    hash = hash.merge(Hash[item,count])
-  end
+def occurence_characters(string)
+  hash = string.downcase.scan(/[a-z]/).group_by {|item| item.match(/^[a-z]$/)}
+  hash.map {|k,v| hash[k] = v.length}
+  hash
 end
-puts hash
+
+string = gets.chomp
+puts occurence_characters(string)
