@@ -9,5 +9,5 @@ end
 
 printf("enter the string: ")
 string = gets
-string = string.to_s
-puts string
+inverted_case_string = string.to_s
+puts inverted_case_string
