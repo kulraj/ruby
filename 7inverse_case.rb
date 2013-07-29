@@ -8,6 +8,6 @@ class String
 end
 
 printf("enter the string: ")
-string = gets
-inverted_case_string = string.to_s
+input_string = gets
+inverted_case_string = input_string.to_s
 puts inverted_case_string
