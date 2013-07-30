@@ -1,8 +1,7 @@
-def occurence_characters(string)
-  hash = string.downcase.scan(/[a-z]/).group_by {|item| item.match(/^[a-z]$/)}
-  hash.map {|k,v| hash[k] = v.length}
+def occurence_characters(string, hash)
+  string.scan(/[a-z]/).each {|item| hash = hash.merge(Hash[item, string.count(item)])}
   hash
 end
 
 string = gets.chomp
-puts occurence_characters(string)
+puts occurence_characters(string.downcase, {})
