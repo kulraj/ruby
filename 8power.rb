@@ -5,15 +5,19 @@ doc
 
 class Array
   def power(x)
-    self.collect{|i| i ** x}
+    collect{|i| i ** x}
   end
 end
 
 puts "enter the array with values separated by whitespaces:"
 array = gets.split(" ").map { |s| s.to_i }
 printf ("enter the power: ");
-power = gets.to_i
-array = array.power(power)
+power = gets.chomp
+if !power.match(/^\d+$/)
+  puts "entered power is not an integer"
+  exit
+end
+array = array.power(power.to_i)
 puts "the array raised to given power is:"
 array.each do |item|
   printf("%d ",item)
