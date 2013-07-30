@@ -31,6 +31,7 @@ end
 
 hayabusa = Bike.new("hayabusa", 1000, "lucky")
 hayabusa.show
-hayabusa. price = 2000
+puts "enter the new price"
+hayabusa.price = gets.to_i
 hayabusa.show
 
