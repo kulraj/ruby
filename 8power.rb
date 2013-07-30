@@ -19,8 +19,6 @@ unless power.match(/^\d+$/)
   else 
   array = array.power(power.to_i)
   puts "the array raised to given power is:"
-  array.each do |item|
-  printf("%d ",item)
-  end
+  print array.join(" ")
 end
 printf("\n")
