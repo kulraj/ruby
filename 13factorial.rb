@@ -1,8 +1,11 @@
-def factorial(number, product)
-  (1..number).each {|i| product *= i}
-  printf("the factorial of %d = %d\n", number, product)
+class Integer
+  def factorial(product)
+    # ord function gives value of the number object, so this is loop from 1 to the number
+    (1..ord).each {|i| product *= i}
+    product
+  end
 end
 
 puts "enter the number"
 number = gets.to_i
-factorial(number, 1) 
+print "the factorial of ", number, " = ", number.factorial(1),"\n" 
