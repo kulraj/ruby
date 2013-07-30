@@ -13,12 +13,17 @@ doc
 
 def pascal_triangle
   printf("enter n: ")
-  n = gets.to_i
-  0.upto(n) do |n|
-    0.upto(n) do |k|
-      yield n,k
-    end
+  n = gets.chomp
+  unless n.match(/^\d+$/)
+    puts "input is not an integer"
+    else
+    limit = n.to_i
+    0.upto(limit) do |row|
+      0.upto(row) do |column|
+        yield row, column
+      end
     printf("\n")
+    end
   end
 end
 
@@ -28,6 +33,6 @@ def factorial(n)
 end
 
 # print combination C(n,k)
-pascal_triangle do |n, k|
-  printf("%d ", factorial(n) / (factorial(k) * factorial(n - k)))
+pascal_triangle do |row, column|
+  printf("%d ", factorial(row) / (factorial(column) * factorial(row - column)))
 end
