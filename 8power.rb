@@ -13,13 +13,14 @@ puts "enter the array with values separated by whitespaces:"
 array = gets.split(" ").map { |s| s.to_i }
 printf ("enter the power: ");
 power = gets.chomp
-if !power.match(/^\d+$/)
-  puts "entered power is not an integer"
-  exit
-end
-array = array.power(power.to_i)
-puts "the array raised to given power is:"
-array.each do |item|
+
+unless power.match(/^\d+$/)
+  puts "power is not an integer"
+  else 
+  array = array.power(power.to_i)
+  puts "the array raised to given power is:"
+  array.each do |item|
   printf("%d ",item)
+  end
 end
 printf("\n")
