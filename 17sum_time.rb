@@ -13,19 +13,13 @@ def sum_time(first_time, second_time)
   # start loop, first add seconds then minutes then hours
   2.downto(0) do |i|
     sum[i] = first_time_array[i].to_i + second_time_array[i].to_i + carry
-    case i
-    when 0
-      if (sum[i] > 23)
-        sum[i] -= 24
-        sum_string = "1 day & "
-      end
-    when 1..2
-      if (sum[i] > 59)
-        sum[i] -= 60
-        carry = 1
-      else
-        carry = 0
-      end
+    if i == 0 # hours
+      days = sum[i] / 24
+      sum[i] %= 24
+      sum_string = days.to_s + " day & " if days > 0
+    else # minutes and seconds
+      carry = sum[i] / 60
+      sum[i] %= 60
     end
     # prepend 0 to sum[i] if it has only 1 digit
     sum[i] = sum[i].to_s.rjust(2, '0')
