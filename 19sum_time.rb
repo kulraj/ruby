@@ -22,7 +22,7 @@ def sum_time(*time)
     if i == 0 # hours
       days = sum[i] / 24
       sum[i] %= 24
-      sum_string = days.to_s + " day & "
+      sum_string = days.to_s + " day & " if days > 0
     else # minutes and seconds
       carry = sum[i] / 60
       sum[i] %= 60
