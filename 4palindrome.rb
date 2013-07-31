@@ -1,7 +1,7 @@
 class String
   def palindrome?
     # compare string with its reverse in ignore case mode. casecmp returns zero if they match
-    casecmp(reverse) == 0 ? true : false
+    casecmp(reverse) == 0
   end
 end
 
