@@ -6,8 +6,7 @@ doc
 class Array
   def key_length(hash)
     for item in self
-      hash[item.length] = [] if !hash.has_key?(item.length)
-      hash = hash.merge(Hash[item.length, hash[item.length].push(item)])
+      hash = hash.merge(Hash[item.length, (hash[item.length] || []).push(item)])
     end
     hash
   end
