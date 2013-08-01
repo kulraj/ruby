@@ -15,20 +15,20 @@ John (EmpId: 12)
 Jack (EmpId: 15)
 doc
 
+require "csv"
+
 developers_string = "Developers:\n"
 designers_string = "Designers:\n"
-File.open("read_file", "r") do |file|
-  while line = file.gets
-    employee_info = line.chomp.split(", ")
-    # employee_info[0] contains name, employee_info[1] contains id and employee_info[2] contains the profile
-    employee_info_string = employee_info[0] + " (Empid:" + employee_info[1] + ")\n"
-    # club all developers into one string and all designers into one string
-    if (employee_info[2] == "Developer")
-      developers_string.concat(employee_info_string)
-    else
-      designers_string.concat(employee_info_string)
-    end  
-  end
+CSV.foreach("read_file.csv") do |employee_info|
+  # employee_info is one row of the file
+  # employee_info[0] contains name, employee_info[1] contains id and employee_info[2] contains the profile
+  employee_info_string = employee_info[0] + " (Empid:" + employee_info[1] + ")\n"
+  # club all developers into one string and all designers into one string
+  if (employee_info[2] =~ /Developer/)
+    developers_string.concat(employee_info_string)
+  else
+    designers_string.concat(employee_info_string)
+  end  
 end
 
 #write the strings to the other file
