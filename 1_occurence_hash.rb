@@ -1,6 +1,6 @@
 def occurence_characters(string)
   hash = {}
-  string.scan(/[a-z]/).each {|item| hash.merge!({item => (hash[item] || 0) + 1})}
+  string.scan(/[a-z]/).each {|item| hash[item] = (hash[item] || 0) + 1}
   hash
 end
 
