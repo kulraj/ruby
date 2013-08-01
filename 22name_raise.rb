@@ -1,12 +1,12 @@
-<<-doc
+=begin
 Create a class 'Name' with two attributes firstname and lastname. Neither of them can be null and the first letter of firstname must be capital. Implement using 'raise'.
-doc
+=end
 
 class Name
   def initialize(firstname, lastname)
-    check_null(firstname.strip)
+    check_null(firstname)
     raise RuntimeError, "first letter should be capital" if (firstname[0].match(/[a-z]/))
-    check_null(lastname.strip)
+    check_null(lastname)
     @firstname = firstname
     @lastname = lastname
   end
@@ -14,11 +14,9 @@ class Name
     print "welcome ", @firstname, " ", @lastname, "\n"
   end
   def check_null(name)
-    raise RuntimeError, "null entry" if name == ""
+    raise RuntimeError, "null entry" if name.strip.empty?
   end
 end
-
-
 
 print "enter first name: "
 firstname = gets.chomp
