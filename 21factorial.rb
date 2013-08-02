@@ -2,7 +2,9 @@
 
 class Integer
   def factorial
-    (1..ord).inject(1) { |prod, i| prod * i }
+    product = 1
+    (1..ord).each { |i| product *= i }
+    product
   end
 end
 
