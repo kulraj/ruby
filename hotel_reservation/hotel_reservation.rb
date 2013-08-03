@@ -12,7 +12,6 @@ When the user enters their period of reservation, the total cost for the reserva
 require "json"
 require "date"
 
-
 class Season
   def initialize(season)
     season.each do |key, value|
@@ -41,11 +40,12 @@ end
 
 class Hotel
   def initialize(hotel_hash)
-#print hotel_hash["Hotel_name"], " next\n"
+    # get info from the json data parsed into a hash
     @name = hotel_hash["Hotel_name"]
     @rate = hotel_hash["rate"].to_i
     if hotel_hash["seasonal_rates"]
       @seasonal_rates = []
+      # seasonal rates is array of season objects, which we push one by one
       hotel_hash["seasonal_rates"].each { |seasonal_rate| @seasonal_rates << Season.new(seasonal_rate) }
     end
     @tax = hotel_hash["tax"]
@@ -55,71 +55,85 @@ class Hotel
   end
   def show
     print "\nname:#{@name}, rate:#{@rate}"
+    # show the details for every season
     @seasonal_rates.each { |season| season.show } if @seasonal_rates
     print "\ntax:#{@tax}\n" if @tax
   end
+
+  def count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
+# checkin date lies between start date and end date
+    seasonal_days = 0
+    if start_date <= checkin_date && checkin_date <= end_date
+    # checkout is before end of season
+      if end_date >= checkout_date
+        seasonal_days = (checkout_date - checkin_date + 1).to_i
+      # checkout is after end of season
+      else
+        seasonal_days = (end_date - checkin_date + 1).to_i
+      end
+    end
+    # checkin is done before start of season
+    if start_date > checkin_date
+      # if the checkout is done before start of season that means no day comes under the season
+      if checkout_date >= start_date
+        # days of season would end at end date or checkout date, whichever comes earlier
+        if checkout_date <= end_date
+          seasonal_days = (checkout_date - start_date + 1).to_i
+        else
+          seasonal_days = (end_date - start_date + 1).to_i
+        end
+      end
+    end
+    seasonal_days
+  end
+
   def show_cost (checkin_date, checkout_date)
     print "\nhotel: #{@name}\n"
+    # initialize the variables to 0
     total_seasonal_days = 0
     total_cost = 0
-#puts (checkout_date - checkin_date).to_f * @rate
+    # we need only calculate seasons if seasonal data exists
     if @seasonal_rates
       start_year = checkin_date.year - 1
-      end_year = checkout_date.year + 1  
+      end_year = checkout_date.year + 1
+      # iterate for all seasons in a hotel
       @seasonal_rates.each do |season|
+        # cover all the years for an input of multiple years
         start_year.upto(end_year) do |year|
           start_date = to_date(season.start_date, year)
-        #print start_date, " "
           season_name = ""
-          seasonal_days = 0
+          #seasonal_days = 0
           end_date = to_date(season.end_date, year)
-        #print end_date, " ;"
- #       <<-doc
+          # condition for a season starting in one year and ending in next, like new year season
           if start_date > end_date
+            # if the month is january then we shift the start date back by one year  
             if checkin_date.month == 1
               start_date <<= 12
+            #else the end date is shifted forward one year
             else
               end_date >>= 12
             end
           end
-          if start_date <= checkin_date && checkin_date <= end_date
-            season_name = season.name
-            if end_date >= checkout_date  
-              seasonal_days = (checkout_date - checkin_date + 1).to_i
-            else
-              seasonal_days = (end_date - checkin_date + 1).to_i
-            end
-          end
-          if start_date > checkin_date
-            if checkout_date >= start_date
-              if checkout_date <= end_date
-                seasonal_days = (checkout_date - start_date + 1).to_i
-              else
-                seasonal_days = (end_date - start_date + 1).to_i
-              end  
-            season_name = season.name
-            end
-          end
-       
-#doc
-       
-          if season_name == season.name
-            print "seasonal days = #{seasonal_days} in #{season_name} @ #{season.rate}\n" 
+          seasonal_days = count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
+          # add to cost and to seasonal days
+          if seasonal_days > 0
+            print "seasonal days = #{seasonal_days} in #{season.name} @ #{season.rate}\n" 
             print  "season start date: #{start_date}, season end_date: #{end_date}\n"
             total_cost += season.rate * seasonal_days
             total_seasonal_days += seasonal_days
           end
         end
-
-     #if seasonal_days
       end
     end
+    # finally, display the total cost with the normal days
     total_days = (checkout_date - checkin_date + 1).to_i
     normal_days = total_days - total_seasonal_days
     total_cost += normal_days * @rate
     print "normal days = #{normal_days} @ #{@rate}\n"
     print "total cost = #{total_cost}\n"
   end
+
+  # append the year to season dates and make it a complete date object
   def to_date(date, year)
     Date.parse("#{date}-#{year}")
   end
@@ -135,20 +149,16 @@ end
 
 hotel_json = File.read("hotel_reservation.json")
 hotels = JSON.parse(hotel_json)
-#print hotel_json.seasonal_rates
-#print hotels[0]["seasonal_rates"][0], "\n"
-#puts hash_of_hotels[0]["seasonal_rates"]
 hotel_objects = []
 
-#hotels.each { |hotel| print hotel, "\n" }
+#create hotel object for each hotel and push to hotels array
 hotels.each { |hotel| hotel_objects << Hotel.new(hotel) }
 hotel_objects.each { |hotel_object| hotel_object.show }
-#hotel_objects[0].show
 
 checkin_date = "in".input_date
 checkout_date = "out".input_date
 raise RuntimeError, "checkout date cannot come before checkin date" if checkin_date > checkout_date
 
-#puts checkin_date.year
+#calculate and show the cost
 hotel_objects.each { |hotel_object| hotel_object.show_cost(checkin_date, checkout_date) }
 print "\n"
