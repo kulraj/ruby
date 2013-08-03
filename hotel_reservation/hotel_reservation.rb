@@ -60,7 +60,7 @@ class Hotel
   end
   def show_cost (checkin_date, checkout_date)
     print "\nhotel: #{@name}\n"
-    seasonal_days = 0
+    total_seasonal_days = 0
     total_cost = 0
 #puts (checkout_date - checkin_date).to_f * @rate
     if @seasonal_rates
@@ -69,7 +69,8 @@ class Hotel
         start_date = to_date(season.start_date, checkin_date.year)
         #print start_date, " "
         season_name = ""
-        end_date = to_date(season.end_date, checkout_date.year)
+        seasonal_days = 0
+        end_date = to_date(season.end_date, checkin_date.year)
         #print end_date, " ;"
  #       <<-doc
         if start_date > end_date
@@ -79,34 +80,38 @@ class Hotel
             end_date >>= 12
           end
         end
-        if start_date <= checkin_date && start_date <= end_date
+        if start_date <= checkin_date && checkin_date <= end_date
           season_name = season.name
           if end_date >= checkout_date  
-            seasonal_days = checkout_date - checkin_date + 1
+            seasonal_days = (checkout_date - checkin_date + 1).to_i
           else
-            seasonal_days = end_date - start_date + 1
+            seasonal_days = (end_date - checkin_date + 1).to_i
           end
         end
-        if start_date > checkin_date && 
-          
+        if start_date > checkin_date
           if checkout_date >= start_date
-            seasonal_days = checkout_date - start_date + 1
-            season_name = season.name
+            if checkout_date <= end_date
+              seasonal_days = (checkout_date - start_date + 1).to_i
+            else
+              seasonal_days = (end_date - start_date + 1).to_i
+            end  
+          season_name = season.name
           end
         end
        
 #doc
-      #print start_date, ",", end_date,"; " 
+      print start_date, ",", end_date,"; " 
         if season_name == season.name
-          print "seasonal days = #{seasonal_days.to_i} in #{season_name} @ #{season.rate}\n" 
-          total_cost += season.rate * seasonal_days.to_i
+          print "seasonal days = #{seasonal_days} in #{season_name} @ #{season.rate}\n" 
+          total_cost += season.rate * seasonal_days
+          total_seasonal_days += seasonal_days
         end
       end
 
      #if seasonal_days
     end
-    total_days = checkout_date - checkin_date + 1
-    normal_days = (total_days - seasonal_days).to_i
+    total_days = (checkout_date - checkin_date + 1).to_i
+    normal_days = total_days - total_seasonal_days
     total_cost += normal_days * @rate
     print "normal days = #{normal_days} @ #{@rate}\n"
     print "total cost = #{total_cost}\n"
