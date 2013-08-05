@@ -61,8 +61,8 @@ class Hotel
   end
 
   def count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
-# checkin date lies between start date and end date
     seasonal_days = 0
+    # checkin date lies between start date and end date
     if start_date <= checkin_date && checkin_date <= end_date
     # checkout is before end of season
       if end_date >= checkout_date
@@ -87,7 +87,15 @@ class Hotel
     seasonal_days
   end
 
-  def show_cost (checkin_date, checkout_date)
+  def show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost)
+    total_days = (checkout_date - checkin_date + 1).to_i
+    normal_days = total_days - total_seasonal_days
+    total_cost += normal_days * @rate
+    print "normal days = #{normal_days} @ #{@rate}\n"
+    print "total cost = #{total_cost}\n"
+  end
+
+  def generate_bills (checkin_date, checkout_date)
     print "\nhotel: #{@name}\n"
     # initialize the variables to 0
     total_seasonal_days = 0
@@ -125,12 +133,7 @@ class Hotel
         end
       end
     end
-    # finally, display the total cost with the normal days
-    total_days = (checkout_date - checkin_date + 1).to_i
-    normal_days = total_days - total_seasonal_days
-    total_cost += normal_days * @rate
-    print "normal days = #{normal_days} @ #{@rate}\n"
-    print "total cost = #{total_cost}\n"
+    show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost)
   end
 
   # append the year to season dates and make it a complete date object
@@ -160,5 +163,5 @@ checkout_date = "out".input_date
 raise RuntimeError, "checkout date cannot come before checkin date" if checkin_date > checkout_date
 
 #calculate and show the cost
-hotel_objects.each { |hotel_object| hotel_object.show_cost(checkin_date, checkout_date) }
+hotel_objects.each { |hotel_object| hotel_object.generate_bills(checkin_date, checkout_date) }
 print "\n"
