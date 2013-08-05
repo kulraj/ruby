@@ -11,6 +11,6 @@ puts "enter the number"
 number = gets.to_i
 unless number >= 0
   puts "negative number entered"
-  else
+else
   print "the factorial of ", number, " = ", number.factorial,"\n"
 end
