@@ -17,7 +17,6 @@ class Customer
   end
   def deposit(deposit_amount)
     @balance += deposit_amount
-    display
   end
   def withdrawal(withdrawal_amount)
     if @balance > withdrawal_amount
@@ -25,16 +24,16 @@ class Customer
     else
       puts "insufficient balance for withdrawal"
     end
-    display
   end
   def display
     puts "name: #{@name} account_no: #{@account_number.to_s} balance: #{@balance.to_s}"
   end
 end
 
-def get_account_number
+def get_customer_object
   puts "enter your account_number"
-  gets.to_i
+  account_number = gets.to_i
+  Customer.search(account_number)
 end
 
 begin
@@ -44,26 +43,19 @@ begin
   when 1
     puts "Welcome. Please enter your name"
     name = gets.chomp
-    #new_account_number += 1
     Customer.new(name)
-    #customer[new_account_number] = Customer.new(name, new_account_number)
-    #customer[new_account_number].display
   when 2
     puts "enter deposit amount"
     deposit_amount = gets.to_i
-    account_number = get_account_number
-#print Customer.instance_eval { @@customer }
-    selected_customer = Customer.search(account_number)
+    selected_customer = get_customer_object
     selected_customer.deposit(deposit_amount)
-    #customer[account_number].display
+    selected_customer.display
   when 3
     puts "enter withdrawal amount"
     withdrawal_amount = gets.to_i
-    account_number = get_account_number
-    selected_customer = Customer.search(account_number)
+    selected_customer = get_customer_object
     selected_customer.withdrawal(withdrawal_amount)
-    #customer[account_number].withdrawal(withdrawal_amount)
-    #customer[account_number].display
+    selected_customer.display
   when 4
     exit
   else
