@@ -26,8 +26,8 @@ end
 
 new_account_number = 0
 customer = []
-while
-  p 'Enter your choice: '
+begin
+  #p 'Enter your choice: '
   puts " 1 for new customer\n 2 for deposit\n 3 for withdrawal\n 4 for quit"
   choice_of_operation = gets.to_i
   case choice_of_operation
@@ -54,4 +54,4 @@ while
   else
     puts "You gave me #{choice_of_operation} -- I have no idea what to do with that."
   end
-end
+end while choice_of_operation != 4
