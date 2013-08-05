@@ -11,7 +11,7 @@ class Vehicle
     @price = price
   end
   def show
-    printf("name: %s, price= %d", @name, @price)
+    puts "Name: #{@name}\nPrice: #{@price}"
   end
 end
 
@@ -20,12 +20,9 @@ class Bike < Vehicle
     super(name, price)
     @dealer = dealer
   end
-  def price=(price)
-    super(price)
-  end
   def show
     super
-    printf(", dealer: %s\n", @dealer)
+    puts "Dealer: #{@dealer}"
   end
 end
 
