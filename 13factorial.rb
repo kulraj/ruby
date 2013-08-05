@@ -2,7 +2,7 @@ class Integer
   def factorial
     unless self >= 0
       puts "Negative number entered"
-      "not defined"
+      exit
     else
       product = 1
       # loop from 1 to the number
