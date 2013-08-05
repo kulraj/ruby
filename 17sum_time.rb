@@ -32,7 +32,7 @@ puts "enter the first time value"
 first_time = gets.chomp
 puts "enter the second time value"
 second_time = gets.chomp
-regex_for_time = /^(([01]?\d)|(2[0-3]))([:]([0-5]\d)){2}$/
+regex_for_time = /^(([01]?\d)|(2[0-3]))([:]([0-5]?\d)){2}$/
 #check for valid time
 unless first_time.match(regex_for_time) && second_time.match(regex_for_time)
   puts "invalid time entered"
