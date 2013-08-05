@@ -5,22 +5,18 @@ doc
 
 class String
   def character_count
-    # ranges defined as per ascii values
-    lowercase_range = Range.new('a','z')
-    uppercase_range = Range.new('A','Z')
-    digit_range = Range.new('0','9')
-    special_character_range = Range.new('!','@')
     #count initialized
     uppercase_count = 0
     lowercase_count = 0
     digit_count = 0
     special_character_count = 0
     self.split("").each do |item|
-      uppercase_count += 1 if uppercase_range.include?item
-      lowercase_count += 1 if lowercase_range.include?item
-      digit_count += 1 if digit_range.include?item
-      # the defined range for special characters includes digits also so we need to exclude the results for digit 
-      special_character_count += 1 if special_character_range.include?item and !digit_range.include?item
+      # we apply ranges as per their ascii values
+      uppercase_count += 1 if ('A'..'Z').include?item
+      lowercase_count += 1 if ('a'..'z').include?item
+      digit_count += 1 if ('0'..'9').include?item
+      # the range for special characters is divided into 4 parts
+      special_character_count += 1 if ('!'..'/').include?item or (':'..'@').include?item or (']'..'`').include?item or ('{'..'~').include?item
     end
     return [lowercase_count, uppercase_count, digit_count, special_character_count]
   end
