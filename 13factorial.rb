@@ -1,16 +1,17 @@
 class Integer
   def factorial
-    product = 1
-    # ord function gives value of the number object, so this is loop from 1 to the number
-    (1..self).each {|i| product *= i}
-    product
+    unless self >= 0
+      puts "Negative number entered"
+      "not defined"
+    else
+      product = 1
+      # loop from 1 to the number
+      (1..self).each {|i| product *= i}
+      product
+    end
   end
 end
 
-puts "enter the number"
+puts "Enter the number"
 number = gets.to_i
-unless number >= 0
-  puts "negative number entered"
-else
-  print "the factorial of ", number, " = ", number.factorial,"\n"
-end
+print "The factorial of #{number} =  #{number.factorial}\n"
