@@ -1,19 +1,19 @@
 class Customer
   @@account_number = 0
-  @@customer = []
+  @@list = []
   def initialize(name)
     @@account_number += 1
     @name = name
     @account_number = @@account_number
     @balance = 1000
-    @@customer << self
+    @@list << self
     display
   end
   def account_number
     @account_number
   end
-  def Customer.search(account_number)
-    @@customer[account_number - 1]
+  def self.search(account_number)
+    @@list[account_number - 1]
   end
   def deposit(deposit_amount)
     @balance += deposit_amount
