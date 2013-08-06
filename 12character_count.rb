@@ -20,7 +20,7 @@ class String
       when '0'..'9'
         digit_count += 1
       else
-        special_character_count += 1
+        special_character_count += 1 if item != ' '
       end
     end
     return [lowercase_count, uppercase_count, digit_count, special_character_count]
