@@ -10,7 +10,7 @@ class String
     lowercase_count = 0
     digit_count = 0
     special_character_count = 0
-    self.split("").each do |item|
+    self.each_char do |item|
       # we apply ranges as per their ascii values
       case item
       when 'A'..'Z'
