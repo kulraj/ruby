@@ -5,24 +5,17 @@ doc
 
 require "time"
 
-def zerofill(time_component)
-  time_component.to_s.rjust(2,'0')
+def to_seconds(timestamp)
+  3600 * timestamp.hour + 60 * timestamp.min + timestamp.sec
 end
 
 def sum_time(first_timestamp, second_timestamp)
-  hours = second_timestamp.hour + first_timestamp.hour
-  minutes = second_timestamp.min + first_timestamp.min
-  seconds = second_timestamp.sec + first_timestamp.sec
-  minutes += (seconds / 60).to_i
-  hours += (minutes / 60). to_i
-  seconds %= 60
-  minutes %= 60
-  sum_time_string = ""
-  if hours > 24
-    sum_time_string = "#{(hours / 24).to_i} day & " 
-    hours %= 24
-  end
-  sum_time_string += "#{zerofill(hours)}:#{zerofill(minutes)}:#{zerofill(seconds)}"
+first_time_seconds = to_seconds(first_timestamp)
+second_time_seconds = to_seconds(second_timestamp)
+total_seconds = first_time_seconds + second_time_seconds
+sum_time_string = ""
+sum_time_string = "1 day & " if total_seconds > 24 * 3600
+sum_time_string += Time.at(total_seconds).utc.strftime("%I:%M:%S")
 end
 
 puts "Enter the first time value"
