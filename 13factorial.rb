@@ -2,7 +2,7 @@ class Integer
   def factorial
     if self < 0
       puts "Negative number entered"
-      exit
+      return "not defined"
     end
     (1..self).inject(1) {|product, i| product *= i}
   end
