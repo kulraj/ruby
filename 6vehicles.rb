@@ -3,11 +3,10 @@ Define a class named 'Vehicle' consisting of 'name','price' and methods for init
 doc
 
 class Vehicle
+  attr_writer :price
+
   def initialize(name, price)
     @name = name
-    @price = price
-  end
-  def price=(price)
     @price = price
   end
   def show
