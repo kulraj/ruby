@@ -12,18 +12,23 @@ class String
     special_character_count = 0
     self.split("").each do |item|
       # we apply ranges as per their ascii values
-      uppercase_count += 1 if ('A'..'Z').include?item
-      lowercase_count += 1 if ('a'..'z').include?item
-      digit_count += 1 if ('0'..'9').include?item
-      # the range for special characters is divided into 4 parts
-      special_character_count += 1 if ('!'..'/').include?item or (':'..'@').include?item or (']'..'`').include?item or ('{'..'~').include?item
+      case item
+      when 'A'..'Z'
+        uppercase_count += 1
+      when 'a'..'z'
+        lowercase_count += 1
+      when '0'..'9'
+        digit_count += 1
+      else
+        special_character_count += 1
+      end
     end
     return [lowercase_count, uppercase_count, digit_count, special_character_count]
   end
 end
 
 puts "enter the string: "
-string = gets
+string = gets.chomp
 count_array = string.character_count
 puts "lowercase characters = #{count_array[0]}"
 puts "uppercase characters = #{count_array[1]}"
