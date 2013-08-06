@@ -13,7 +13,7 @@ class Customer
     @account_number
   end
   def Customer.search(account_number)
-    @@customer.each { |customer| return customer if customer.account_number == account_number }
+    @@customer[account_number - 1]
   end
   def deposit(deposit_amount)
     @balance += deposit_amount
@@ -36,7 +36,7 @@ def get_customer_object
   Customer.search(account_number)
 end
 
-begin
+while true
   puts "Enter your choice:\n 1 for new customer\n 2 for deposit\n 3 for withdrawal\n 4 for quit"
   choice_of_operation = gets.to_i
   case choice_of_operation
@@ -61,4 +61,4 @@ begin
   else
     puts "You gave me #{choice_of_operation} -- I have no idea what to do with that."
   end
-end while choice_of_operation != 4
+end
