@@ -10,12 +10,12 @@ def to_seconds(timestamp)
 end
 
 def sum_time(first_timestamp, second_timestamp)
-first_time_seconds = to_seconds(first_timestamp)
-second_time_seconds = to_seconds(second_timestamp)
-total_seconds = first_time_seconds + second_time_seconds
-sum_time_string = ""
-sum_time_string = "1 day & " if total_seconds > 24 * 3600
-sum_time_string += Time.at(total_seconds).utc.strftime("%I:%M:%S")
+  first_time_seconds = to_seconds(first_timestamp)
+  second_time_seconds = to_seconds(second_timestamp)
+  total_seconds = first_time_seconds + second_time_seconds
+  sum_time_string = ""
+  sum_time_string = "1 day & " if total_seconds > 24 * 3600
+  sum_time_string += Time.at(total_seconds).utc.strftime("%I:%M:%S")
 end
 
 puts "Enter the first time value"
