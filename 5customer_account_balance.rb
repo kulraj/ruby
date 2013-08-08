@@ -13,9 +13,8 @@ class Customer
     @account_number
   end
   def self.search(account_number)
-    if account_number > @@list.length
+    unless @@list[account_number - 1]
       print "invalid account number entered\n"
-      return
     end
     @@list[account_number - 1]
   end
