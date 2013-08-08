@@ -32,7 +32,7 @@ class Item
     @name = name
     @imported = imported
     @exempted = exempted
-    @price = price.to_i
+    @price = price.to_f
   end
   def effective_price
     #add taxes to the price, round to 2 places after decimal and return 
@@ -46,7 +46,7 @@ class Item
     row_string = "| " + @name.ljust(max_length_name, ' ') + " | "
     row_string.concat(@imported.to_s.ljust("imported".length, ' ') + " | ")
     row_string.concat(@exempted.to_s.ljust("exempted".length, ' ') + " | ")
-    row_string.concat(@price.to_s.ljust("price".length, ' ') + " | ")
+    row_string.concat(@price.to_s.ljust(" price ".length, ' ') + " | ")
     print row_string
   end
   def name
@@ -80,12 +80,12 @@ begin
 end while continue_choice =~ /^y$/i
 
 # we count the spaces before grand total and total columns in our output
-number_of_spaces = max_length_name + "imported | exempted | price".length + "grand total".length
-number_of_underscores = max_length_name + "  | imported | exempted | price | price including tax |  ".length
+number_of_spaces = max_length_name + "imported | exempted |  price ".length + "grand total".length
+number_of_underscores = max_length_name + "  | imported | exempted |  price  | price including tax |  ".length
 
 # we use rjust and ljust for formatting the output
 print " \n".rjust(number_of_underscores, "_")
-print "| ","name".ljust(max_length_name + 1,' '), "| imported | exempted | price | price including tax | \n"
+print "| ","name".ljust(max_length_name + 1,' '), "| imported | exempted |  price  | price including tax | \n"
 0.upto(item.length - 1) do |i|
   item[i].show(max_length_name)
   effective_price = item[i].effective_price
