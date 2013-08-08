@@ -13,10 +13,11 @@ class Customer
     @account_number
   end
   def self.search(account_number)
-    unless @@list[account_number - 1]
+    selected_customer = @@list[account_number - 1]
+    unless selected_customer
       print "invalid account number entered\n"
     end
-    @@list[account_number - 1]
+    selected_customer
   end
   def deposit(deposit_amount)
     @balance += deposit_amount
