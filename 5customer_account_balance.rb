@@ -13,6 +13,10 @@ class Customer
     @account_number
   end
   def self.search(account_number)
+    if account_number > @@list.length
+      print "invalid account number entered\n"
+      return
+    end
     @@list[account_number - 1]
   end
   def deposit(deposit_amount)
@@ -48,14 +52,18 @@ while true
     puts "enter deposit amount"
     deposit_amount = gets.to_i
     selected_customer = get_customer_object
-    selected_customer.deposit(deposit_amount)
-    selected_customer.display
+    if selected_customer
+      selected_customer.deposit(deposit_amount)
+      selected_customer.display
+    end
   when 3
     puts "enter withdrawal amount"
     withdrawal_amount = gets.to_i
     selected_customer = get_customer_object
-    selected_customer.withdrawal(withdrawal_amount)
-    selected_customer.display
+    if selected_customer
+      selected_customer.withdrawal(withdrawal_amount)
+      selected_customer.display
+    end
   when 4
     exit
   else
