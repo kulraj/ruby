@@ -4,15 +4,18 @@ Eg: ['abc','def',1234,234,'abcd','x','mnop',5,'zZzZ'] should give result as {3=>
 doc
 
 class Array
-  def key_length(hash)
+  def key_length
+    hash = {}
     for item in self
-      hash = hash.merge(Hash[item.length, (hash[item.length] || []).push(item)])
+      item_length = item.to_s.length
+      hash[item_length] ||= []
+      hash[item_length].push(item)
     end
     hash
   end
 end
 
 puts "enter the strings separated by whitespaces"
-array = gets.split(" ")
-hash = array.key_length({})
+array = gets.chomp.split(" ")
+hash = array.key_length
 puts hash
