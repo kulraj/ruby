@@ -1,9 +1,6 @@
 class Integer
   def factorial
-    if self < 0
-      puts "Negative number entered"
-      return "not defined"
-    end
+    raise RuntimeError, "Negative value entered" if self < 0
     (1..self).inject(1) {|product, i| product *= i}
   end
 end
