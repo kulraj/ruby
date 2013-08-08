@@ -9,15 +9,18 @@ class String
     uppercase_count = 0
     lowercase_count = 0
     digit_count = 0
+    uppercase_range = Range.new('A','Z')
+    lowercase_range = Range.new('a','z')
+    digit_range = Range.new('0','9')
     special_character_count = 0
     self.each_char do |item|
       # we apply ranges as per their ascii values
       case item
-      when 'A'..'Z'
+      when uppercase_range
         uppercase_count += 1
-      when 'a'..'z'
+      when lowercase_range
         lowercase_count += 1
-      when '0'..'9'
+      when digit_range
         digit_count += 1
       else
         special_character_count += 1 if item != ' '
