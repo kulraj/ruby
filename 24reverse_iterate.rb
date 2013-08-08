@@ -8,9 +8,9 @@ doc
 class Array
   def reverse_iterate
     i = length
-    while i >= 0
-      yield self[i]
+    while i > 0
       i -= 1
+      yield self[i]
     end      
   end
 end
