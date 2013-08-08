@@ -4,34 +4,23 @@ Eg: ("11:23:07","22:53:45","0:23:23","23:45:56") -> "2 day & 10:26:11"
 ("0:45:34","0:15:58") -> 01:01:32 ; ("11:23:07","22:53:45") -> 1 day & 10:16:52
 doc
 
+require 'time'
+
+def to_seconds(timestamp)
+  timestamp.hour * 3600 + timestamp.min * 60 + timestamp.sec
+end
+
 def sum_time(*time)
   # initialize the variables
-  time_array = []
-  0.upto(time.length - 1) do |i|
-    time_array[i] = time[i].split(":")
+  total_seconds = 0
+  time.each do |time_item|
+    timestamp = Time.parse(time_item)
+    total_seconds += to_seconds(timestamp)
   end
-  carry = 0
-  sum = []
-  sum_string = ""
-  # start loop, first add seconds then minutes then hours
-  2.downto(0) do |i|
-    sum[i] = carry
-    0.upto(time.length - 1) do |j|
-      sum[i] += time_array[j][i].to_i
-    end
-    if i == 0 # hours
-      days = sum[i] / 24
-      sum[i] %= 24
-      sum_string = days.to_s + " day & " if days > 0
-    else # minutes and seconds
-      carry = sum[i] / 60
-      sum[i] %= 60
-    end
-    # prepend 0 to sum[i] if it has only 1 digit
-    sum[i] = sum[i].to_s.rjust(2, '0')
-  end
-  # join sum array into single string and append to existing string
-  sum_string.concat(sum.join(":")) 
+  sum_time_string = ""
+  days = (total_seconds / (24 * 3600)).to_i
+  sum_time_string = "#{days} day & " if days > 0
+  sum_time_string += Time.at(total_seconds).utc.strftime("%H:%M:%S")
 end
 
 puts sum_time("11:23:07","22:53:45","0:23:23","23:45:56")
