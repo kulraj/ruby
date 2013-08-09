@@ -45,7 +45,6 @@ class Invoice
     price = item.price
     price *= 1 + Invoice.sales_tax/100.to_f if item.exempted =~ /no/i
     price *= 1 + Invoice.import_duty/100.to_f if item.imported =~ /yes/i
-    #Invoice.new(item, price.round(2))
     @@item_list << self
     price.round(2)
   end
