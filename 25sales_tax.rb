@@ -28,11 +28,14 @@ You have to generate a list that would display the list in a nice format and the
 doc
 
 class Invoice
-  @@item_list = []
   @@import_duty = 5
   @@sales_tax = 10
-  
-  def self.display_row(item, max_length_name)
+
+  def initialize(items)
+    @item_list = items
+  end
+
+  def display_row(item, max_length_name)
     #print the data formatted column wise
     row_string = "| " + item.name.ljust(max_length_name, ' ') + " | "
     row_string.concat(item.imported.to_s.ljust("imported".length, ' ') + " | ")
@@ -40,15 +43,14 @@ class Invoice
     row_string.concat(item.price.to_s.ljust(" price ".length, ' ') + " | ")
     print row_string
   end
-  def self.effective_price(item)
+  def effective_price(item)
     #add taxes to the price, round to 2 places after decimal and return 
     price = item.price
-    price *= 1 + Invoice.sales_tax/100.to_f if item.exempted =~ /no/i
-    price *= 1 + Invoice.import_duty/100.to_f if item.imported =~ /yes/i
-    @@item_list << self
+    price *= 1 + @@sales_tax/100.to_f if item.exempted =~ /no/i
+    price *= 1 + @@import_duty/100.to_f if item.imported =~ /yes/i
     price.round(2)
   end
-  def self.generate_bill(items, max_length_name)
+  def generate_bill(max_length_name)
     grand_total = 0
     # we count the spaces before grand total and total columns in our output
     number_of_spaces = max_length_name + "imported | exempted |  price ".length + "grand total".length
@@ -57,7 +59,7 @@ class Invoice
     print " \n".rjust(number_of_underscores, "_")
     print "| ","name".ljust(max_length_name + 1,' '), "| imported | exempted |  price  | price including tax | \n"
 
-    items.each do |item|
+    @item_list.each do |item|
       display_row(item, max_length_name)
       effective_price = effective_price(item)
       print effective_price.to_s.ljust("price including tax".length, ' '), " |\n"
@@ -103,4 +105,5 @@ begin
   item_number += 1
 end while continue_choice =~ /^y$/i
 
-Invoice.generate_bill(items, max_length_name)
+invoice = Invoice.new(items)
+invoice.generate_bill(max_length_name)
