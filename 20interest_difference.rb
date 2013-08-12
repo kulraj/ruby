@@ -1,16 +1,21 @@
 <<-doc
-Create a class Interest that gives the user the difference in amount calculated simply and compoundedly. Initialise class with a block. 'p' and 't' are entered by user. Take 'r' = 10% pa.
+Create a class Interest that gives the user the difference in amount calculated simply and compoundedly.
+Initialise class with a block. 'p' and 't' are entered by user. Take 'r' = 10% pa.
 doc
 
 class Interest
-  def initialize(name, principal, time, &block)
-    @name, @block = name, block
-    @p = principal.to_i
-    @t = time.to_f
-    @r = 10
+  attr_accessor :p, :r, :t
+  def initialize(&block)
+    yield self
   end
-  def difference()
-    "difference amount = #{ @block.call(@p, @r, @t) } Rs"
+  def simple_interest
+    @p * @r * @t / 100
+  end
+  def compound_interest
+    @p * (1 + @r.to_f/100) ** @t - @p
+  end
+  def difference
+    (compound_interest - simple_interest).round(2)
   end
 end
 
@@ -24,12 +29,10 @@ regex_for_float = /^\d+([.]\d+)?$/
 unless principal.match(regex_for_integer) && time.match(regex_for_float)
   puts "invalid value entered"
   else
-  interest = Interest.new("interest difference", principal, time) do |principal, rate, time|
-    # calculate simple and compound interest with the formula
-    simple_interest = principal * rate * time / 100
-    compound_interest = principal * (1 + rate.to_f/100) ** time - principal
-    # find the difference to two places and round to two places after decimal
-    (compound_interest - simple_interest).round(2)
+  interest = Interest.new do |interest|
+    interest.p = principal.to_i
+    interest.t = time.to_f
+    interest.r = 10
   end
-  print interest.difference()
+  puts "Difference in the simple and compound interest = Rs #{interest.difference}"
 end
