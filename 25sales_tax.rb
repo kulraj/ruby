@@ -42,6 +42,7 @@ class FormatDisplay
     @data_array.each do |fieldset|
       fieldset.each_with_index do |field, i|
         length = field.to_s.length
+        # @data_array[0][i] stores the ith header, and it is the key for our max_length_fields hash
         @max_length_fields[@data_array[0][i]] = length if length > @max_length_fields[@data_array[0][i]]
       end
     end
@@ -123,7 +124,6 @@ end
 #initialize the variables
 item_number = 0
 items = []
-max_length_name = "name".length
 begin
   # input the details
   print "\nName of the product: "
