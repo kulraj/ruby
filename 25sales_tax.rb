@@ -1,4 +1,4 @@
-<<-doc
+=begin
 Sales Tax Problem: You have to write a program in Ruby which would calculate the sales tax on the items according to the following conditions:
 
 a. Flat 10 % sales tax is applicable on all items except for book, food and medicine
@@ -25,58 +25,97 @@ Price: 150
 Do you want to add more items to your list(y/n): n
 
 You have to generate a list that would display the list in a nice format and the grand total should be rounded to the nearest integer
-doc
+=end
+
+class FormatDisplay
+  attr_accessor :max_length_field
+  @@column_width = 0
+
+  def initialize(data_array)
+    @data_array = data_array
+    @max_length_fields = {}
+    #initialize values of hash to lengths of the headers
+    @data_array[0].each { |field| @max_length_fields[field] = field.length}
+  end
+  
+  def find_max_lengths
+    @data_array.each do |fieldset|
+      fieldset.each_with_index do |field, i|
+        length = field.to_s.length
+        @max_length_fields[@data_array[0][i]] = length if length > @max_length_fields[@data_array[0][i]]
+      end
+    end
+  end
+
+  def display_table
+    #3 is added for 2 spaces(padding) and one pipe(|) per field, total 3 characters
+    @max_length_fields.each_value { |value| @@column_width += value + 3 }
+    puts "".ljust(@@column_width, "_")
+    @data_array.each do |fieldset|
+      row_string = ""
+      fieldset.each_with_index do |field, i|
+        row_string += "| " + sprintf("%#{@max_length_fields[@data_array[0][i]]}s", field) + " "
+      end
+      row_string += "|"
+      puts row_string
+    end
+  end
+
+  def show_footer(text, value)
+    output_string = "#{text} : #{value}"
+    puts output_string.rjust(@@column_width, " ")
+  end
+end
 
 class Invoice
   @@import_duty = 5
   @@sales_tax = 10
+  attr_accessor :grand_total
 
   def initialize(items)
     @item_list = items
+    @grand_total = 0
   end
 
-  def display_row(item, max_length_name)
-    #print the data formatted column wise
-    row_string = "| " + item.name.ljust(max_length_name, ' ') + " | "
-    row_string.concat(item.imported.to_s.ljust("imported".length, ' ') + " | ")
-    row_string.concat(item.exempted.to_s.ljust("exempted".length, ' ') + " | ")
-    row_string.concat(item.price.to_s.ljust(" price ".length, ' ') + " | ")
-    print row_string
-  end
-  def effective_price(item)
-    #add taxes to the price, round to 2 places after decimal and return 
-    price = item.price
-    price *= 1 + @@sales_tax/100.to_f if item.exempted =~ /no/i
-    price *= 1 + @@import_duty/100.to_f if item.imported =~ /yes/i
-    price.round(2)
-  end
-  def generate_bill(max_length_name)
-    grand_total = 0
-    # we count the spaces before grand total and total columns in our output
-    number_of_spaces = max_length_name + "imported | exempted |  price ".length + "grand total".length
-    number_of_underscores = max_length_name + "  | imported | exempted |  price  | price including tax |  ".length
-    # we use rjust and ljust for formatting the output
-    print " \n".rjust(number_of_underscores, "_")
-    print "| ","name".ljust(max_length_name + 1,' '), "| imported | exempted |  price  | price including tax | \n"
-
+  
+  def calculate_effective_price
+    #add taxes to the price, round to 2 places after decimal
     @item_list.each do |item|
-      display_row(item, max_length_name)
-      effective_price = effective_price(item)
-      print effective_price.to_s.ljust("price including tax".length, ' '), " |\n"
-      grand_total += effective_price
+      item.price_including_tax *= 1 + @@sales_tax/100.to_f if item.exempted =~ /no/i
+      item.price_including_tax *= 1 + @@import_duty/100.to_f if item.imported =~ /yes/i
+      item.price_including_tax = item.price_including_tax.round(2)
     end
-    print "\n", ("grand total | " + grand_total.round.to_s).rjust(number_of_spaces, ' '), "\n"
+  end
+  def calculate_grand_total
+    @item_list.each { |item| @grand_total += item.price_including_tax }
+  end
+  def create_data_array
+    data_array = []
+    data_array.push(["name", "imported", "exempted", "price", "price including tax"])
+    @item_list.each do |item|
+      data_array.push([item.name, item.imported, item.exempted, item.price, item.price_including_tax])
+    end
+    data_array
+  end
+  def generate_bill()
+    data_array = create_data_array
+    format = FormatDisplay.new(data_array)
+    format.find_max_lengths
+    format.display_table
+    format.show_footer("Grand Total", @grand_total.round(2))
   end
 end
 
 class Item
   attr_reader :name, :imported, :exempted, :price
+  attr_accessor :price_including_tax
 
   def initialize(name, imported, exempted, price)
     @name = name
     @imported = imported
     @exempted = exempted
     @price = price.to_f
+    @price_including_tax = @price
   end
   
 end
@@ -97,13 +136,13 @@ begin
   price = gets.chomp
   print "Do you want to add more items to your list(y/n): "
   continue_choice = gets.chomp
-  #price should be integer
-  raise RuntimeError, "entered price is not an integer" if  price !~ /^\d+/
+  #price should be number
+  raise RuntimeError, "entered price is not a number" if  price !~ /^[+-]?\d+([.]\d+)?$/
   items[item_number] = Item.new(name, imported, exempted, price)
-  # maximum length of name is useful in formatting
-  max_length_name = items[item_number].name.length if max_length_name < items[item_number].name.length
   item_number += 1
 end while continue_choice =~ /^y$/i
 
 invoice = Invoice.new(items)
-invoice.generate_bill(max_length_name)
+invoice.calculate_effective_price
+invoice.calculate_grand_total
+invoice.generate_bill()
