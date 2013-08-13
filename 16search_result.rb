@@ -9,6 +9,8 @@ doc
 class String
   def highlight_and_count(search_word)
     count = 0
+    # escape all characters except for alphabets, numbers and underscore
+    search_word.gsub!(/[^\w]/) { |match| "\\" + match }
     puts gsub(/#{search_word}/i) { |match|
       count += 1
       "(" + match + ")"
