@@ -8,12 +8,12 @@ doc
 
 class String
   def highlight_and_count(search_word)
-	count = 0
-    puts gsub(/#{search_word}/i) do |match|
+    count = 0
+    puts gsub(/#{search_word}/i) { |match|
       count += 1
-      "(" + match + ")"     
- 	end
-    print "Total occurences found = ", count, "\n"
+      "(" + match + ")"
+    }
+    puts "Total occurences found = #{count}"
   end
 end
 
