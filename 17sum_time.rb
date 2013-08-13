@@ -5,27 +5,30 @@ doc
 
 require "time"
 
-def to_seconds(timestamp)
+def to_seconds(time)
+  timestamp = Time.parse(time)
   3600 * timestamp.hour + 60 * timestamp.min + timestamp.sec
 end
 
-def sum_time(first_timestamp, second_timestamp)
-  first_time_seconds = to_seconds(first_timestamp)
-  second_time_seconds = to_seconds(second_timestamp)
-  total_seconds = first_time_seconds + second_time_seconds
+def sum_time(first_time, second_time)
+  total_seconds = to_seconds(first_time) + to_seconds(second_time)
   sum_time_string = ""
   sum_time_string = "1 day & " if total_seconds > 24 * 3600
   sum_time_string += Time.at(total_seconds).utc.strftime("%H:%M:%S")
+end
+
+def validate_time(time)
+  time.match(/^(([01]?\d)|(2[0-3]))([:]([0-5]?\d)){2}$/)
 end
 
 puts "Enter the first time value"
 first_time = gets.chomp
 puts "Enter the second time value"
 second_time = gets.chomp
-regex_for_time = /^(([01]?\d)|(2[0-3]))([:]([0-5]?\d)){2}$/
+
 #check for valid time
-unless first_time.match(regex_for_time) && second_time.match(regex_for_time)
-  puts "Invalid time entered"
+if validate_time(first_time) && validate_time(second_time)
+  puts "Sum of times = #{sum_time(first_time, second_time)}"
 else
-  puts "Sum of times = #{sum_time(Time.parse(first_time), Time.parse(second_time))}"
+  puts "Invalid time entered"
 end
