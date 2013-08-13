@@ -35,10 +35,10 @@ class FormatDisplay
     @column_width = 0
     #initialize values of hash to lengths of the headers
     @data_array[0].each { |field| @max_length_fields[field] = field.length}
-    find_max_lengths
+    find_max_lengths_for_columns
   end
   
-  def find_max_lengths
+  def find_max_lengths_for_columns
     @data_array.each do |fieldset|
       fieldset.each_with_index do |field, i|
         length = field.to_s.length
@@ -88,7 +88,7 @@ class Invoice
     end
   end
   def calculate_grand_total
-    @item_list.each { |item| @grand_total += item.price_including_tax }
+    @item_list.each { |item| self.grand_total += item.price_including_tax }
   end
   def create_data_array
     data_array = []
@@ -101,8 +101,7 @@ class Invoice
   def generate_bill()
     calculate_effective_price
     calculate_grand_total
-    data_array = create_data_array
-    format = FormatDisplay.new(data_array)
+    format = FormatDisplay.new(create_data_array)
     format.display_table
     format.show_footer("Grand Total", @grand_total.round)
   end
