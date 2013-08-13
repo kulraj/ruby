@@ -23,10 +23,8 @@ print "Enter the principal: "
 principal = gets.chomp
 print "Enter the time in years: "
 time = gets.chomp
-regex_for_integer = /^\d+$/
-regex_for_float = /^\d+([.]\d+)?$/
 # validate principal and time
-unless principal.match(regex_for_integer) && time.match(regex_for_float)
+unless principal == principal.to_i.to_s && time == time.to_f.to_s
   puts "invalid value entered"
   else
   interest = Interest.new do |interest|
