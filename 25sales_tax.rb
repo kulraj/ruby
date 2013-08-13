@@ -28,14 +28,14 @@ You have to generate a list that would display the list in a nice format and the
 =end
 
 class FormatDisplay
-  attr_accessor :max_length_field
-  @@column_width = 0
 
   def initialize(data_array)
     @data_array = data_array
     @max_length_fields = {}
+    @column_width = 0
     #initialize values of hash to lengths of the headers
     @data_array[0].each { |field| @max_length_fields[field] = field.length}
+    find_max_lengths
   end
   
   def find_max_lengths
@@ -50,8 +50,8 @@ class FormatDisplay
 
   def display_table
     #3 is added for 2 spaces(padding) and one pipe(|) per field, total 3 characters
-    @max_length_fields.each_value { |value| @@column_width += value + 3 }
-    puts "".ljust(@@column_width, "_")
+    @max_length_fields.each_value { |value| @column_width += value + 3 }
+    puts "".ljust(@column_width, "_")
     @data_array.each do |fieldset|
       row_string = ""
       fieldset.each_with_index do |field, i|
@@ -64,7 +64,7 @@ class FormatDisplay
 
   def show_footer(text, value)
     output_string = "#{text} : #{value}"
-    puts output_string.rjust(@@column_width, " ")
+    puts output_string.rjust(@column_width, " ")
   end
 end
 
@@ -99,11 +99,12 @@ class Invoice
     data_array
   end
   def generate_bill()
+    calculate_effective_price
+    calculate_grand_total
     data_array = create_data_array
     format = FormatDisplay.new(data_array)
-    format.find_max_lengths
     format.display_table
-    format.show_footer("Grand Total", @grand_total.round(2))
+    format.show_footer("Grand Total", @grand_total.round)
   end
 end
 
@@ -122,7 +123,6 @@ class Item
 end
 
 #initialize the variables
-item_number = 0
 items = []
 begin
   # input the details
@@ -138,11 +138,8 @@ begin
   continue_choice = gets.chomp
   #price should be number
   raise RuntimeError, "entered price is not a number" if  price !~ /^[+-]?\d+([.]\d+)?$/
-  items[item_number] = Item.new(name, imported, exempted, price)
-  item_number += 1
+  items << Item.new(name, imported, exempted, price)
 end while continue_choice =~ /^y$/i
 
 invoice = Invoice.new(items)
-invoice.calculate_effective_price
-invoice.calculate_grand_total
 invoice.generate_bill()
