@@ -13,6 +13,8 @@ require "json"
 require "date"
 
 class Season
+  attr_reader :name, :start_date, :end_date, :rate
+
   def initialize(season)
     season.each do |key, value|
       @name = key
@@ -24,21 +26,19 @@ class Season
   def show
     print "\nspecial season: #{@name}, start date: #{@start_date}, end date: #{@end_date}, rate: #{@rate}"
   end
-  def name
-    @name
-  end
-  def start_date
-    @start_date
-  end
-  def end_date
-    @end_date
-  end
-  def rate
-    @rate
-  end
 end
 
 class Hotel
+  @@list = []
+  attr_reader :name, :rate, :tax, :seasonal_rates
+
+  def self.load_json(filename)
+    path_to_json_file = File.dirname($0) + "/" + filename
+    hotel_json = File.read(path_to_json_file)
+    hotels = JSON.parse(hotel_json)
+    hotels.each { |hotel| @@list << Hotel.new(hotel) }
+  end
+
   def initialize(hotel_hash)
     # get info from the json data parsed into a hash
     @name = hotel_hash["Hotel_name"]
@@ -50,78 +50,82 @@ class Hotel
     end
     @tax = hotel_hash["tax"]
   end
-  def seasonal_rates
-    print @seasonal_rates
+
+  def self.show
+    @@list.each { |hotel| hotel.show_details }
   end
-  def show
-    print "\nname:#{@name}, rate:#{@rate}"
+
+  def show_details
+    print "\nname:#{name}, rate:#{rate}"
     # show the details for every season
-    @seasonal_rates.each { |season| season.show } if @seasonal_rates
-    print "\ntax:#{@tax}\n" if @tax
+    seasonal_rates.each { |season| print season.show } if seasonal_rates
+    print "\ntax:#{tax}\n" if tax
+  end
+
+  def self.list
+    @@list
+  end
+  
+end
+
+class Reservation
+
+  def self.calculate_rents(checkin_date, checkout_date)
+    reservation = Reservation.new
+    hotel_list = Hotel.list
+    hotel_list.each { |hotel| reservation.calculate_rent(checkin_date, checkout_date, hotel) }
   end
 
   def count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
-    seasonal_days = 0
-    # checkin date lies between start date and end date
-    if start_date <= checkin_date && checkin_date <= end_date
-    # checkout is before end of season
-      if end_date >= checkout_date
-        seasonal_days = (checkout_date - checkin_date + 1).to_i
-      # checkout is after end of season
-      else
-        seasonal_days = (end_date - checkin_date + 1).to_i
-      end
-    end
-    # checkin is done before start of season
-    if start_date > checkin_date
-      # if the checkout is done before start of season that means no day comes under the season
-      if checkout_date >= start_date
-        # days of season would end at end date or checkout date, whichever comes earlier
-        if checkout_date <= end_date
-          seasonal_days = (checkout_date - start_date + 1).to_i
-        else
-          seasonal_days = (end_date - start_date + 1).to_i
-        end
-      end
-    end
-    seasonal_days
+    # we create arrays for the season and stay and take common dates
+    stay_dates = (checkin_date..checkout_date).to_a
+    season_dates = (start_date..end_date).to_a
+    #the length of intersection gives us the number of days in the given season
+    (stay_dates & season_dates).length
   end
 
-  def show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost)
+  def show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost, hotel)
     total_days = (checkout_date - checkin_date + 1).to_i
     normal_days = total_days - total_seasonal_days
-    total_cost += normal_days * @rate
-    print "normal days = #{normal_days} @ #{@rate}\n"
-    print "total cost = #{total_cost}\n"
+    total_cost += normal_days * hotel.rate
+    print "normal days = #{normal_days} @ #{hotel.rate}\n"
+    print "Total = #{total_cost}\n"
+    if hotel.tax then
+      cost_including_tax = total_cost * (1 + hotel.tax.to_f/100)
+      print "Total cost(including tax @#{hotel.tax}% ) = #{cost_including_tax.round}\n"
+    end
   end
 
-  def generate_bills (checkin_date, checkout_date)
-    print "\nhotel: #{@name}\n"
+  def generate_start_and_end_dates_for_season(season, year, checkin_date)
+    start_date = to_date(season.start_date, year)
+    end_date = to_date(season.end_date, year)
+    # condition for a season starting in one year and ending in next, like new year season
+    if start_date > end_date
+      # if the month is january then we shift the start date back by one year  
+      if checkin_date.month == 1
+        start_date <<= 12
+        #else the end date is shifted forward one year
+      else
+        end_date >>= 12
+      end
+    end
+    return start_date, end_date
+  end
+
+  def calculate_rent (checkin_date, checkout_date, hotel)
+    print "\nhotel: #{hotel.name}\n"
     # initialize the variables to 0
     total_seasonal_days = 0
     total_cost = 0
     # we need only calculate seasons if seasonal data exists
-    if @seasonal_rates
+    if hotel.seasonal_rates
       start_year = checkin_date.year - 1
       end_year = checkout_date.year + 1
-      # iterate for all seasons in a hotel
-      @seasonal_rates.each do |season|
+      # iterate for all seasons in a hotel, each loop not used since that prints seasonal rates and skips the inner block
+      hotel.seasonal_rates.each do |season|
         # cover all the years for an input of multiple years
         start_year.upto(end_year) do |year|
-          start_date = to_date(season.start_date, year)
-          season_name = ""
-          #seasonal_days = 0
-          end_date = to_date(season.end_date, year)
-          # condition for a season starting in one year and ending in next, like new year season
-          if start_date > end_date
-            # if the month is january then we shift the start date back by one year  
-            if checkin_date.month == 1
-              start_date <<= 12
-            #else the end date is shifted forward one year
-            else
-              end_date >>= 12
-            end
-          end
+          start_date, end_date = generate_start_and_end_dates_for_season(season, year, checkin_date )
           seasonal_days = count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
           # add to cost and to seasonal days
           if seasonal_days > 0
@@ -133,7 +137,7 @@ class Hotel
         end
       end
     end
-    show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost)
+    show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost, hotel)
   end
 
   # append the year to season dates and make it a complete date object
@@ -150,18 +154,10 @@ class String
   end
 end
 
-hotel_json = File.read("hotel_reservation.json")
-hotels = JSON.parse(hotel_json)
-hotel_objects = []
-
-#create hotel object for each hotel and push to hotels array
-hotels.each { |hotel| hotel_objects << Hotel.new(hotel) }
-hotel_objects.each { |hotel_object| hotel_object.show }
-
+Hotel.load_json("hotel_reservation.json")
+Hotel.show
 checkin_date = "in".input_date
 checkout_date = "out".input_date
 raise RuntimeError, "checkout date cannot come before checkin date" if checkin_date > checkout_date
 
-#calculate and show the cost
-hotel_objects.each { |hotel_object| hotel_object.generate_bills(checkin_date, checkout_date) }
-print "\n"
+Reservation.calculate_rents(checkin_date, checkout_date)
