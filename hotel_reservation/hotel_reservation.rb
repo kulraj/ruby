@@ -69,14 +69,19 @@ class Hotel
 end
 
 class Reservation
+  attr_reader :checkin_date, :checkout_date
 
-  def self.calculate_rents(checkin_date, checkout_date)
-    reservation = Reservation.new
-    hotel_list = Hotel.list
-    hotel_list.each { |hotel| reservation.calculate_rent(checkin_date, checkout_date, hotel) }
+  def initialize(checkin_date, checkout_date)
+    @checkin_date = checkin_date
+    @checkout_date = checkout_date
   end
 
-  def count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
+  def calculate_rents
+    hotel_list = Hotel.list
+    hotel_list.each { |hotel| calculate_rent(hotel) }
+  end
+
+  def count_seasonal_days(start_date, end_date)
     # we create arrays for the season and stay and take common dates
     stay_dates = (checkin_date..checkout_date).to_a
     season_dates = (start_date..end_date).to_a
@@ -84,7 +89,7 @@ class Reservation
     (stay_dates & season_dates).length
   end
 
-  def show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost, hotel)
+  def show_total_cost(total_seasonal_days, total_cost, hotel)
     total_days = (checkout_date - checkin_date + 1).to_i
     normal_days = total_days - total_seasonal_days
     total_cost += normal_days * hotel.rate
@@ -96,7 +101,7 @@ class Reservation
     end
   end
 
-  def generate_start_and_end_dates_for_season(season, year, checkin_date)
+  def generate_start_and_end_dates_for_season(season, year)
     start_date = to_date(season.start_date, year)
     end_date = to_date(season.end_date, year)
     # condition for a season starting in one year and ending in next, like new year season
@@ -112,7 +117,7 @@ class Reservation
     return start_date, end_date
   end
 
-  def calculate_rent (checkin_date, checkout_date, hotel)
+  def calculate_rent (hotel)
     print "\nhotel: #{hotel.name}\n"
     # initialize the variables to 0
     total_seasonal_days = 0
@@ -125,8 +130,8 @@ class Reservation
       hotel.seasonal_rates.each do |season|
         # cover all the years for an input of multiple years
         start_year.upto(end_year) do |year|
-          start_date, end_date = generate_start_and_end_dates_for_season(season, year, checkin_date )
-          seasonal_days = count_seasonal_days(start_date, checkin_date, end_date, checkout_date)
+          start_date, end_date = generate_start_and_end_dates_for_season(season, year)
+          seasonal_days = count_seasonal_days(start_date, end_date)
           # add to cost and to seasonal days
           if seasonal_days > 0
             print "seasonal days = #{seasonal_days} in #{season.name} @ #{season.rate}\n" 
@@ -137,7 +142,7 @@ class Reservation
         end
       end
     end
-    show_total_cost(checkout_date, checkin_date, total_seasonal_days, total_cost, hotel)
+    show_total_cost(total_seasonal_days, total_cost, hotel)
   end
 
   # append the year to season dates and make it a complete date object
@@ -146,18 +151,17 @@ class Reservation
   end
 end
 
-class String
-  def input_date
-    print "\nenter check #{self} date(YYYY-MM-DD): "
-    date = gets.chomp
-    Date.parse(date)
-  end
+def input_date(in_out)
+  print "\nenter check #{in_out} date(YYYY-MM-DD): "
+  date = gets.chomp
+  Date.parse(date)
 end
 
 Hotel.load_json("hotel_reservation.json")
 Hotel.show
-checkin_date = "in".input_date
-checkout_date = "out".input_date
+checkin_date = input_date("in")
+checkout_date = input_date("out")
 raise RuntimeError, "checkout date cannot come before checkin date" if checkin_date > checkout_date
 
-Reservation.calculate_rents(checkin_date, checkout_date)
+reservation = Reservation.new(checkin_date, checkout_date)
+reservation.calculate_rents
